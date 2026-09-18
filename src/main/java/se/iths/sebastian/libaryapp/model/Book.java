@@ -3,10 +3,10 @@ package se.iths.sebastian.libaryapp.model;
 public class Book {
 
     private String title;
-    private int isbn;
+    private String isbn;
     private Author author;
 
-    public Book(String title, int isbn, Author author) {
+    public Book(String title, String isbn, Author author) {
         this.title = title;
         this.isbn = isbn;
         this.author = author;
@@ -16,7 +16,7 @@ public class Book {
         return title;
     }
 
-    public int getIsbn() {
+    public String getIsbn() {
         return isbn;
     }
 

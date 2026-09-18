@@ -18,9 +18,9 @@ public class Main {
         borrowers.add(new Borrower("Gamer 23", "Lösenord12345!", "Kalle"));
         borrowers.add(new Borrower("Fizen", "grabben123", "Sebbe"));
         List<Book> books = new ArrayList<>();
-        books.add(new Book("Hopp", 56745855, author1));
-        books.add(new Book("Tro", 48655855, author1));
-        books.add(new Book("Frihet", 78955655, author2));
+        books.add(new Book("Hopp", "56745855", author1));
+        books.add(new Book("Tro", "48655855", author1));
+        books.add(new Book("Frihet", "78955655", author2));
         List<Loan> loans = new ArrayList<>();
 
         boolean appIsRunning = true;
@@ -30,6 +30,7 @@ public class Main {
             if (currentBorrower == null) {
 
                 appIsRunning = false;
+                continue;
             }
 
             boolean loggedIn = true;
@@ -38,14 +39,21 @@ public class Main {
                 IO.println("-- Meny --");
                 IO.println("1. Lista av alla böcker");
                 IO.println("2. Låna bok");
-                IO.println("3. Avsluta");
+                IO.println("3. Lista alla lån");
+                IO.println("4. Logga ut");
+                IO.println("5. Avsluta");
 
-                String choice = IO.readln("Välj mellan 1-2: ");
+                String choice = IO.readln("Välj mellan 1-5: ");
 
                 switch (choice) {
                     case "1" -> listBooks(books);
-                    case "2" -> borrowBook(books);
-                    case "3" -> {
+                    case "2" -> borrowBook(books, loans, currentBorrower);
+                    case "3" -> listLoans(loans);
+                    case "4" -> {
+                        IO.println("Loggas ut");
+                        loggedIn = false;
+                    }
+                    case "5" -> {
                         loggedIn = false;
                         appIsRunning = false;
                     }
@@ -55,6 +63,7 @@ public class Main {
 
         }
 
+        IO.println("Programet avslutas");
     }
 
     private static void listBooks(List<Book> books) {
@@ -63,41 +72,74 @@ public class Main {
         }
     }
 
-    private static void borrowBook(List<Book> books) {
-        String isbn = IO.readln("ISBN: ");
-
-        Book foundBook = null;
-        for (Book book : books) {
-            foundBook = book;
-            break;
-        }
-        if (foundBook == null) {
-            IO.println("Ingen bok med det nummret hittades");
-        }
-
-    }
-
-
-    public static Borrower login(List<Borrower> borrowers) {
-
-        IO.println("Skriv in inlogg");
-
+    private static Borrower login(List<Borrower> borrowers) {
+        IO.println("-- Logga in --");
         String username = IO.readln("Username: ");
         String password = IO.readln("Password: ");
+
         Borrower currentBorrower = null;
 
         for (Borrower borrower : borrowers) {
-
-            if (borrower.getUsername().equals(username) && borrower.getPassword().equals(password)) ;
-            currentBorrower = borrower;
+            if (borrower.getUsername().equals(username) && borrower.getPassword().equals(password)) {
+                currentBorrower = borrower;
+                break;
+            }
         }
+
         if (currentBorrower != null) {
-            System.out.println("Inloggad som " + currentBorrower);
+            IO.println("Inloggad som: " + currentBorrower);
         } else {
-            System.out.println("Fel username eller password.");
+            IO.println("Error! Fel användarnamn eller lösenord");
         }
-
 
         return currentBorrower;
     }
+
+    private static void listLoans(List<Loan> loans) {
+        if (loans.isEmpty()) {
+            IO.println("Finns inga lån att se här än");
+            return;
+        }
+
+        for (Loan loan : loans) {
+            IO.println(loan);
+        }
+    }
+
+    private static void borrowBook(List<Book> books, List<Loan> loans, Borrower currentBorrower) {
+        String isbn = IO.readln("ISBN: ");
+
+        Book foundBook = null;
+
+        for (Book book : books) {
+            if (book.getIsbn().equals(isbn)) {
+                foundBook = book;
+                break;
+            }
+        }
+
+        if (foundBook == null) {
+            IO.println("Finns ingen bok med det ISBN nummret");
+            return;
+        }
+
+        boolean alreadyLoaned = false;
+
+        for (Loan loan : loans) {
+            if (loan.getBook() == foundBook) {
+                alreadyLoaned = true;
+                break;
+            }
+        }
+
+        if (alreadyLoaned) {
+            IO.println("Booken är redan utlånad");
+            return;
+        }
+
+        Loan newLoan = new Loan(currentBorrower, foundBook);
+        loans.add(newLoan);
+        IO.println("Du har lånat: " + foundBook.getTitle());
+    }
+
 }
