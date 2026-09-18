@@ -8,7 +8,7 @@ public class Loan {
     private Borrower borrower;
     private Book book;
 
-    public Loan(LocalDateTime loanDate, Borrower borrower, Book book) {
+    public Loan(Borrower borrower, Book book) {
         this.loanDate = LocalDateTime.now();
         this.borrower = borrower;
         this.book = book;
